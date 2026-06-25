@@ -25,13 +25,24 @@ body {
   position: relative;
 }
 
+/* ── PRINT ── */
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  @page { size: 850px 1125px; margin: 0; }
+  html, body { background: #fff !important; padding: 0 !important; margin: 0 !important; display: block !important; width: 850px !important; }
+  .page { width: 850px !important; box-shadow: none !important; page-break-inside: avoid; }
+  .toolbar { display: none !important; }
+  [contenteditable] { background: none !important; box-shadow: none !important; outline: none !important; }
+  .upload-overlay, .img-overlay, .logo-slot-overlay { display: none !important; }
+}
+
 /* ── HEADER ── */
 .header {
   background: linear-gradient(150deg, #0a0a1a 0%, #0e1020 50%, #100e30 100%);
-  padding: 26px 40px 52px;
+  padding: 22px 40px 40px;
   position: relative;
   overflow: hidden;
-  min-height: 245px;
+  min-height: 220px;
 }
 
 /* Logo bar */
@@ -165,7 +176,7 @@ body {
 
 /* ── BODY ── */
 .body {
-  padding: 38px 40px 32px;
+  padding: 28px 40px 24px;
   background: #fff;
 }
 
@@ -174,7 +185,7 @@ body {
   display: flex;
   gap: 36px;
   align-items: flex-start;
-  margin-bottom: 30px;
+  margin-bottom: 22px;
 }
 .challenge-left { flex: 1.15; }
 .challenge-intro {
@@ -296,21 +307,21 @@ body {
 
 /* Body copy */
 .body-copy {
-  font-size: 13.5px;
+  font-size: 13px;
   color: #444;
-  line-height: 1.7;
-  margin-bottom: 30px;
-  padding-top: 24px;
+  line-height: 1.6;
+  margin-bottom: 22px;
+  padding-top: 18px;
   border-top: 1px solid #ebebeb;
 }
 
 /* Features */
 .features-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: #111;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
   letter-spacing: -0.3px;
 }
 .features-grid {
@@ -347,7 +358,7 @@ body {
 /* ── LOGO STRIP ── */
 .logo-strip {
   background: #f5f6fa;
-  padding: 24px 40px 22px;
+  padding: 18px 40px 16px;
   border-top: 1px solid #eee;
 }
 .logo-strip-label {
