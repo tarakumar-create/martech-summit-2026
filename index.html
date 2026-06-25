@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon Music × Amplitude | MarTech Summit 2026</title>
+<style>
+/* ── RESET ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  background: #e5e5e5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 0 64px;
+}
+
+/* ── PAGE ── */
+.page {
+  width: 850px;
+  background: #fff;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  position: relative;
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(150deg, #0a0a1a 0%, #0e1020 50%, #100e30 100%);
+  padding: 26px 40px 52px;
+  position: relative;
+  overflow: hidden;
+  min-height: 245px;
+}
+
+/* Logo bar */
+.logo-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 26px;
+  position: relative;
+  z-index: 3;
+}
+.logo-upload-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.logo-upload-wrap:hover .upload-overlay { opacity: 1; }
+.upload-overlay {
+  position: absolute;
+  inset: -4px;
+  background: rgba(92,107,192,0.25);
+  border: 1.5px dashed rgba(255,255,255,0.5);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+  z-index: 10;
+}
+.upload-overlay span {
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(0,0,0,0.5);
+  padding: 3px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* Amplitude logo */
+.amp-logo-img {
+  height: 30px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+.amp-logo-svg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.amp-logo-svg .circle {
+  width: 30px; height: 30px; flex-shrink: 0;
+  background: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.amp-logo-svg .circle svg { width: 18px; height: 18px; }
+.amp-logo-svg .wordmark {
+  color: #fff;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.2px;
+  line-height: 1;
+}
+
+.logo-divider {
+  color: rgba(255,255,255,0.35);
+  font-size: 18px;
+  font-weight: 300;
+  margin: 0 12px;
+  line-height: 1;
+  user-select: none;
+}
+
+.partner-logo-img {
+  height: 26px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+.partner-logo-placeholder {
+  color: rgba(255,255,255,0.55);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: 1.5px dashed rgba(255,255,255,0.3);
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.partner-logo-placeholder svg { width: 14px; height: 14px; opacity: 0.7; }
+
+/* Header content */
+.header-content {
+  max-width: 500px;
+  position: relative;
+  z-index: 3;
+}
+.header h1 {
+  color: #fff;
+  font-size: 33px;
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.6px;
+  margin-bottom: 14px;
+}
+.header-sub {
+  color: rgba(255,255,255,0.65);
+  font-size: 13.5px;
+  line-height: 1.6;
+  max-width: 430px;
+}
+
+/* 3D shapes */
+.shapes-wrap {
+  position: absolute;
+  top: 0; right: 0;
+  width: 380px; height: 245px;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.shapes-wrap svg { width: 100%; height: 100%; }
+
+/* ── BODY ── */
+.body {
+  padding: 38px 40px 32px;
+  background: #fff;
+}
+
+/* Challenge row */
+.challenge-row {
+  display: flex;
+  gap: 36px;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+.challenge-left { flex: 1.15; }
+.challenge-intro {
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #111;
+  margin-bottom: 18px;
+}
+.challenge-sub {
+  font-size: 13px;
+  color: #444;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.challenge-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.challenge-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+.challenge-list li::before {
+  content: '●';
+  color: #111;
+  font-size: 10px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+/* Screenshot area */
+.challenge-right { flex: 0.85; }
+.screenshot-wrap {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #f0f2f8;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.screenshot-wrap:hover .img-overlay { opacity: 1; }
+.screenshot-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+}
+.screenshot-placeholder {
+  width: 100%;
+  padding: 20px;
+}
+.mock-ui {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+  overflow: hidden;
+}
+.mock-topbar {
+  background: #f8f9fd;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eef0f7;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.mock-dot { width: 8px; height: 8px; border-radius: 50%; }
+.mock-body { padding: 14px 12px; }
+.mock-tag-pill {
+  background: #e8f4fe;
+  color: #1565c0;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.mock-bars { display: flex; align-items: flex-end; gap: 4px; height: 60px; margin-bottom: 8px; }
+.mock-bar { flex: 1; border-radius: 2px 2px 0 0; }
+.mock-label { font-size: 8px; color: #888; }
+
+.img-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  border-radius: 8px;
+}
+.img-overlay-btn {
+  background: #fff;
+  color: #333;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+}
+.img-overlay-btn:hover { background: #f0f0f0; }
+.img-overlay-btn.danger { background: #fee; color: #c00; }
+.img-overlay-btn.danger:hover { background: #fcc; }
+
+/* Body copy */
+.body-copy {
+  font-size: 13.5px;
+  color: #444;
+  line-height: 1.7;
+  margin-bottom: 30px;
+  padding-top: 24px;
+  border-top: 1px solid #ebebeb;
+}
+
+/* Features */
+.features-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111;
+  text-align: center;
+  margin-bottom: 24px;
+  letter-spacing: -0.3px;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+}
+.feature {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.feature-icon-wrap {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}
+.feature-icon-wrap svg { width: 28px; height: 28px; }
+.feature-text {}
+.feature-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+.feature-desc {
+  font-size: 12.5px;
+  color: #555;
+  line-height: 1.55;
+}
+
+/* ── LOGO STRIP ── */
+.logo-strip {
+  background: #f5f6fa;
+  padding: 24px 40px 22px;
+  border-top: 1px solid #eee;
+}
+.logo-strip-label {
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 18px;
+}
+.logos-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+.logo-slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.15s;
+  min-width: 60px;
+}
+.logo-slot:hover { background: rgba(0,0,0,0.04); }
+.logo-slot:hover .logo-slot-overlay { opacity: 1; }
+.logo-slot-img { height: 28px; width: auto; opacity: 0.35; filter: grayscale(100%); display: block; }
+.logo-slot-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ccc;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  font-style: italic;
+}
+.logo-slot-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(92,107,192,0.12);
+  border: 1px dashed rgba(92,107,192,0.4);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+.logo-slot-overlay span { font-size: 9px; color: #5c6bc0; font-weight: 700; }
+
+/* ── FOOTER ── */
+.footer {
+  padding: 12px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #eee;
+  background: #fff;
+}
+.footer-copy { font-size: 10.5px; color: #bbb; }
+.ae-block { text-align: right; }
+.ae-name { font-size: 12.5px; font-weight: 700; color: #222; }
+.ae-title { font-size: 11px; color: #777; margin-top: 1px; }
+.ae-contact { font-size: 11px; color: #5c6bc0; margin-top: 2px; }
+
+/* ── EDIT UI ── */
+[contenteditable] { outline: none; cursor: text; }
+[contenteditable]:hover { background: rgba(92,107,192,0.06); border-radius: 2px; }
+[contenteditable]:focus { background: rgba(92,107,192,0.09); border-radius: 2px; box-shadow: 0 0 0 2px rgba(92,107,192,0.35); }
+
+/* Toolbar */
+.toolbar {
+  position: fixed;
+  top: 16px; left: 50%; transform: translateX(-50%);
+  background: #1a1040;
+  color: rgba(255,255,255,0.9);
+  display: flex; align-items: center; gap: 0;
+  border-radius: 24px;
+  padding: 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  z-index: 9999;
+  font-size: 12px;
+  overflow: hidden;
+}
+.toolbar-item {
+  padding: 9px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+  transition: background 0.12s;
+  border: none; background: none; color: rgba(255,255,255,0.85);
+  font-size: 12px; font-family: inherit;
+}
+.toolbar-item:hover { background: rgba(255,255,255,0.1); }
+.toolbar-sep { width: 1px; background: rgba(255,255,255,0.15); height: 28px; }
+
+@media print {
+  body { background: #fff; padding: 0; }
+  .toolbar { display: none !important; }
+  .page { box-shadow: none; }
+  [contenteditable] { background: none !important; box-shadow: none !important; }
+  .upload-overlay, .img-overlay, .logo-slot-overlay { display: none !important; }
+}
+
+/* Hidden file inputs */
+input[type=file] { display: none; }
+</style>
+</head>
+<body>
+
+<!-- Hidden file inputs -->
+<input type="file" id="upload-amp-logo" accept="image/*">
+<input type="file" id="upload-partner-logo" accept="image/*">
+<input type="file" id="upload-screenshot" accept="image/*">
+<input type="file" id="upload-logo-0" accept="image/*">
+<input type="file" id="upload-logo-1" accept="image/*">
+<input type="file" id="upload-logo-2" accept="image/*">
+<input type="file" id="upload-logo-3" accept="image/*">
+<input type="file" id="upload-logo-4" accept="image/*">
+<input type="file" id="upload-logo-5" accept="image/*">
+<input type="file" id="upload-logo-6" accept="image/*">
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <span class="toolbar-item">✏️ Click any text to edit</span>
+  <div class="toolbar-sep"></div>
+  <span class="toolbar-item">🖼️ Hover images to replace</span>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-item" onclick="window.print()">⬇️ Save as PDF</button>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+
+    <!-- 3D shapes -->
+    <div class="shapes-wrap">
+      <svg viewBox="0 0 380 245" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Main big blue rect -->
+        <rect x="190" y="-55" width="155" height="155" rx="22"
+          fill="url(#s1)" opacity="0.9" transform="rotate(18 190 -55)"/>
+        <!-- Teal rect behind -->
+        <rect x="270" y="20" width="130" height="130" rx="18"
+          fill="url(#s2)" opacity="0.75" transform="rotate(-8 270 20)"/>
+        <!-- Small purple -->
+        <rect x="130" y="10" width="90" height="90" rx="14"
+          fill="url(#s3)" opacity="0.55" transform="rotate(30 130 10)"/>
+        <!-- Dark blue large behind everything -->
+        <rect x="300" y="100" width="180" height="180" rx="28"
+          fill="url(#s4)" opacity="0.25" transform="rotate(-15 300 100)"/>
+        <defs>
+          <linearGradient id="s1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#4f8ef7"/>
+            <stop offset="100%" stop-color="#2563eb"/>
+          </linearGradient>
+          <linearGradient id="s2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#06b6d4"/>
+            <stop offset="100%" stop-color="#0ea5e9"/>
+          </linearGradient>
+          <linearGradient id="s3" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#6d28d9"/>
+          </linearGradient>
+          <linearGradient id="s4" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#1e40af"/>
+            <stop offset="100%" stop-color="#1e3a8a"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- Logo bar -->
+    <div class="logo-bar">
+      <!-- Amplitude logo -->
+      <div class="logo-upload-wrap" onclick="document.getElementById('upload-amp-logo').click()" title="Click to replace Amplitude logo">
+        <div class="amp-logo-svg" id="amp-logo-display">
+          <div class="circle">
+            <svg viewBox="0 0 20 20" fill="none">
+              <path d="M10 2L17.5 16H2.5L10 2Z" fill="#0a0a1a"/>
+              <path d="M7 12.5h6M8 9.5h4" stroke="white" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="wordmark">Amplitude</span>
+        </div>
+        <div class="upload-overlay"><span>Replace logo</span></div>
+      </div>
+
+      <span class="logo-divider">×</span>
+
+      <!-- Partner logo -->
+      <div class="logo-upload-wrap" id="partner-logo-wrap" onclick="document.getElementById('upload-partner-logo').click()" title="Click to upload partner logo">
+        <div id="partner-logo-display">
+          <div class="partner-logo-placeholder">
+            <svg viewBox="0 0 14 14" fill="none"><path d="M2 2h10v10H2z" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-dasharray="2 1.5" fill="none" rx="1"/><path d="M5 7h4M7 5v4" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/></svg>
+            Upload logo
+          </div>
+        </div>
+        <div class="upload-overlay"><span>Replace logo</span></div>
+      </div>
+    </div>
+
+    <!-- Headline -->
+    <div class="header-content">
+      <h1 contenteditable="true">From Fragmented Signals<br>to Full-Funnel Clarity</h1>
+      <p class="header-sub" contenteditable="true">How Amazon Music went from multi-week BI tickets to real-time campaign clarity — and what it means for every marketing team at Amazon.</p>
+    </div>
+
+  </div><!-- /header -->
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- Challenge row -->
+    <div class="challenge-row">
+
+      <div class="challenge-left">
+        <p class="challenge-intro" contenteditable="true">Before Amplitude, campaign measurement at Amazon Music was slow, fragmented, and disconnected from the speed of marketing decisions.</p>
+        <p class="challenge-sub" contenteditable="true">Too often, teams struggled to:</p>
+        <ul class="challenge-list" id="challenge-list">
+          <li><span contenteditable="true">Get campaign performance reports without submitting BI tickets — turnaround times measured in weeks</span></li>
+          <li><span contenteditable="true">Connect campaign activity to downstream behaviors like sign-ups for Amazon Music Unlimited</span></li>
+          <li><span contenteditable="true">Adjust spend in-flight — without timely visibility, campaigns ran to completion before problems were caught</span></li>
+          <li><span contenteditable="true">Answer the fundamental question: which campaigns are actually driving conversions?</span></li>
+        </ul>
+      </div>
+
+      <div class="challenge-right">
+        <div class="screenshot-wrap" id="screenshot-wrap">
+          <div class="screenshot-placeholder" id="screenshot-placeholder">
+            <div class="mock-ui">
+              <div class="mock-topbar">
+                <div class="mock-dot" style="background:#ff5f57"></div>
+                <div class="mock-dot" style="background:#ffbd2e"></div>
+                <div class="mock-dot" style="background:#28c840"></div>
+              </div>
+              <div class="mock-body">
+                <div class="mock-tag-pill">↑ Campaign → Conversion correlated</div>
+                <div class="mock-bars">
+                  <div class="mock-bar" style="height:35%;background:#c7d2fe"></div>
+                  <div class="mock-bar" style="height:52%;background:#c7d2fe"></div>
+                  <div class="mock-bar" style="height:42%;background:#c7d2fe"></div>
+                  <div class="mock-bar" style="height:75%;background:#6366f1"></div>
+                  <div class="mock-bar" style="height:58%;background:#c7d2fe"></div>
+                  <div class="mock-bar" style="height:88%;background:#22c55e"></div>
+                  <div class="mock-bar" style="height:68%;background:#c7d2fe"></div>
+                </div>
+                <div class="mock-label">Campaign attribution · Amplitude Analytics</div>
+              </div>
+            </div>
+          </div>
+          <img class="screenshot-img" id="screenshot-img" src="" alt="" style="display:none;">
+          <div class="img-overlay" id="screenshot-overlay">
+            <button class="img-overlay-btn" onclick="document.getElementById('upload-screenshot').click()">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 4l3-3 3 3" stroke="#333" stroke-width="1.5" stroke-linecap="round"/><path d="M1 10v2a1 1 0 001 1h10a1 1 0 001-1v-2" stroke="#333" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Upload image
+            </button>
+            <button class="img-overlay-btn danger" id="remove-screenshot-btn" style="display:none" onclick="removeScreenshot()">✕ Remove</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /challenge-row -->
+
+    <!-- Body copy -->
+    <p class="body-copy" contenteditable="true">Amplitude gave Amazon Music a single platform to capture and analyze all clickstream signals — so marketers can now ask questions directly, without waiting on an analytics team. Which campaigns drove sign-ups? Where are users dropping off? Which channel converts best? Decision-making that once took weeks now happens in real time.</p>
+
+    <!-- Features -->
+    <div class="features-title" contenteditable="true">The Amplitude AI Analytics Platform Is Now Fully Agentic</div>
+    <div class="features-grid">
+
+      <div class="feature">
+        <div class="feature-icon-wrap">
+          <!-- Funnel icon -->
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 6h20l-7 9v7l-6-3v-4L4 6z" stroke="#111" stroke-width="1.6" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="feature-text">
+          <div class="feature-title" contenteditable="true">Funnel &amp; Journey Analysis</div>
+          <div class="feature-desc" contenteditable="true">See conversion rates at every step and surface the actual routes users take — including unexpected ones. Know exactly which campaigns drive sign-ups and where users drop off.</div>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon-wrap">
+          <!-- AI chat icon -->
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="5" width="18" height="13" rx="3" stroke="#111" stroke-width="1.6"/>
+            <path d="M7 19l-3 4v-4" stroke="#111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M23 10l2 2-2 2" stroke="#111" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M8 11h8M8 14h5" stroke="#111" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="feature-text">
+          <div class="feature-title" contenteditable="true">Conversational AI for Every Marketer</div>
+          <div class="feature-desc" contenteditable="true">Any marketer asks a question in plain language — no data expertise needed. Agents build charts, monitor dashboards, surface anomalies, and perform deep root cause analysis automatically.</div>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon-wrap">
+          <!-- Experiment icon -->
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 4v10l-5 8h18l-5-8V4" stroke="#111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 4h12" stroke="#111" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="17" cy="18" r="2" fill="#111" opacity="0.3"/>
+          </svg>
+        </div>
+        <div class="feature-text">
+          <div class="feature-title" contenteditable="true">Session Replay &amp; Web Experiments</div>
+          <div class="feature-desc" contenteditable="true">See what users do between events — rage clicks, dead clicks, friction points. Then act without waiting on engineering: make no-code page changes and run controlled experiments instantly.</div>
+        </div>
+      </div>
+
+    </div><!-- /features-grid -->
+
+  </div><!-- /body -->
+
+  <!-- LOGO STRIP -->
+  <div class="logo-strip">
+    <div class="logo-strip-label" contenteditable="true">Performance driven teams at Amazon choose Amplitude</div>
+    <div class="logos-row" id="logos-row">
+      <div class="logo-slot" onclick="triggerLogoUpload(0)" title="Click to upload logo">
+        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Culver's</span>
+        <div class="logo-slot-overlay"><span>Upload</span></div>
+      </div>
+      <div class="logo-slot" onclick="triggerLogoUpload(1)" title="Click to upload logo">
+        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Jersey Mike's</span>
+        <div class="logo-slot-overlay"><span>Upload</span></div>
+      </div>
+      <div class="logo-slot" onclick="triggerLogoUpload(2)" title="Click to upload logo">
+        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">TicketSwap</span>
+        <div class="logo-slot-overlay"><span>Upload</span></div>
+      </div>
+      <div class="logo-slot" onclick="triggerLogoUpload(3)" title="Click to upload logo">
+        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Gathern</span>
+        <div class="logo-slot-overlay"><span>Upload</span></div>
+      </div>
+      <div class="logo-slot" onclick="triggerLogoUpload(4)" title="Click to upload logo">
+        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Livestorm</span>
+        <div class="logo-slot-overlay"><span>Upload</span></div>
+      </div>
+      <div class="logo-slot" onclick="triggerLogoUpload(5)" title="Click to upload logo">
+        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Taco Bell</span>
+        <div class="logo-slot-overlay"><span>Upload</span></div>
+      </div>
+      <div class="logo-slot" onclick="triggerLogoUpload(6)" title="Click to upload logo">
+        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Trendhim</span>
+        <div class="logo-slot-overlay"><span>Upload</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-copy">© 2026 Amplitude Inc. Confidential. All Rights Reserved.</div>
+    <div class="ae-block">
+      <div class="ae-name" contenteditable="true">Robyn Baron</div>
+      <div class="ae-title" contenteditable="true">Strategic Account Manager – Amazon</div>
+      <div class="ae-contact" contenteditable="true">robyn.baron@amplitude.com &nbsp;|&nbsp; (206) 255-4955</div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── Image uploads ──
+function readFile(file, cb) {
+  const r = new FileReader();
+  r.onload = e => cb(e.target.result);
+  r.readAsDataURL(file);
+}
+
+// Amplitude logo
+document.getElementById('upload-amp-logo').addEventListener('change', function() {
+  if (!this.files[0]) return;
+  readFile(this.files[0], url => {
+    const d = document.getElementById('amp-logo-display');
+    d.innerHTML = `<img src="${url}" class="amp-logo-img" alt="Amplitude">`;
+  });
+  this.value = '';
+});
+
+// Partner logo
+document.getElementById('upload-partner-logo').addEventListener('change', function() {
+  if (!this.files[0]) return;
+  readFile(this.files[0], url => {
+    const d = document.getElementById('partner-logo-display');
+    d.innerHTML = `<img src="${url}" class="partner-logo-img" alt="Partner">`;
+  });
+  this.value = '';
+});
+
+// Screenshot
+document.getElementById('upload-screenshot').addEventListener('change', function() {
+  if (!this.files[0]) return;
+  readFile(this.files[0], url => {
+    const img = document.getElementById('screenshot-img');
+    const placeholder = document.getElementById('screenshot-placeholder');
+    const removeBtn = document.getElementById('remove-screenshot-btn');
+    img.src = url;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+    removeBtn.style.display = 'flex';
+  });
+  this.value = '';
+});
+
+function removeScreenshot() {
+  document.getElementById('screenshot-img').style.display = 'none';
+  document.getElementById('screenshot-img').src = '';
+  document.getElementById('screenshot-placeholder').style.display = 'block';
+  document.getElementById('remove-screenshot-btn').style.display = 'none';
+}
+
+// Customer logos
+function triggerLogoUpload(idx) {
+  document.getElementById('upload-logo-' + idx).click();
+}
+for (let i = 0; i < 7; i++) {
+  (function(idx) {
+    document.getElementById('upload-logo-' + idx).addEventListener('change', function() {
+      if (!this.files[0]) return;
+      readFile(this.files[0], url => {
+        const slots = document.querySelectorAll('.logo-slot');
+        const slot = slots[idx];
+        // Replace text with image
+        const textEl = slot.querySelector('.logo-slot-text');
+        if (textEl) textEl.style.display = 'none';
+        let imgEl = slot.querySelector('.logo-slot-img');
+        if (!imgEl) {
+          imgEl = document.createElement('img');
+          imgEl.className = 'logo-slot-img';
+          slot.insertBefore(imgEl, slot.querySelector('.logo-slot-overlay'));
+        }
+        imgEl.src = url;
+        imgEl.style.display = 'block';
+      });
+      this.value = '';
+    });
+  })(i);
+}
+</script>
+</body>
+</html>
