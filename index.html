@@ -492,9 +492,11 @@ input[type=file] { display: none; }
   <div class="toolbar-sep"></div>
   <span class="toolbar-item">🖼️ Hover images to replace</span>
   <div class="toolbar-sep"></div>
-  <button class="toolbar-item" onclick="saveHTML()">💾 Save edits</button>
+  <button class="toolbar-item" id="save-status" onclick="saveHTML()">💾 Save edits</button>
   <div class="toolbar-sep"></div>
   <button class="toolbar-item" onclick="printPDF()">🖨️ Save as PDF</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-item" onclick="resetEdits()" style="color:#ff9a9a">↺ Reset</button>
 </div>
 
 <!-- PAGE -->
@@ -543,15 +545,7 @@ input[type=file] { display: none; }
     <div class="logo-bar">
       <!-- Amplitude logo -->
       <div class="logo-upload-wrap" onclick="document.getElementById('upload-amp-logo').click()" title="Click to replace Amplitude logo">
-        <div class="amp-logo-svg" id="amp-logo-display">
-          <div class="circle">
-            <svg viewBox="0 0 20 20" fill="none">
-              <path d="M10 2L17.5 16H2.5L10 2Z" fill="#0a0a1a"/>
-              <path d="M7 12.5h6M8 9.5h4" stroke="white" stroke-width="1.3" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <span class="wordmark">Amplitude</span>
-        </div>
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MDAwIDEwMDAiIHdpZHRoPSI1MDAwIiBoZWlnaHQ9IjEwMDAiPgoJPHN0eWxlPgoJCXRzcGFuIHsgd2hpdGUtc3BhY2U6cHJlIH0KCQkuc2hwMCB7IGZpbGw6IHdoaXRlIH0gCgk8L3N0eWxlPgoJPHBhdGggaWQ9IlBhdGggMSIgY2xhc3M9InNocDAiIGQ9Ik00MzguOTUgMjI4LjY0QzQzNi4xOSAyMjUgNDMzLjA1IDIyMy4wOSA0MjkuNTYgMjIzLjA5QzQyNi42OCAyMjMuMDkgNDI0LjA1IDIyNC4zOCA0MjIuMzYgMjI1LjQ2QzM5NS44NCAyNDYuMjkgMzU5LjU1IDMzNC41MyAzMjkuODEgNDUwLjhMMzU2LjE0IDQ1MS4xQzQwOC4xMyA0NTEuNjkgNDYxLjgyIDQ1Mi4zIDUxNC44OSA0NTMuMTJDNTAwLjkgMzk5Ljg2IDQ4Ny42OCAzNTQuMjEgNDc1LjU2IDMxNy4zNkM0NTcuODUgMjYzLjUgNDQ1Ljg4IDIzOS4zOSA0MzguOTUgMjI4LjY0WiIgLz4KCTxwYXRoIGlkPSJQYXRoIDIiIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xhc3M9InNocDAiIGQ9Ik05OTUuOTkgNTAyLjQ3Qzk5NS45OSA3NzcuNSA3NzMuMDMgMTAwMC40NyA0OTcuOTkgMTAwMC40N0MyMjIuOTUgMTAwMC40NyAtMC4wMSA3NzcuNSAtMC4wMSA1MDIuNDdDLTAuMDEgMjI3LjQzIDIyMi45NSA0LjQ3IDQ5Ny45OSA0LjQ3Qzc3My4wMyA0LjQ3IDk5NS45OSAyMjcuNDMgOTk1Ljk5IDUwMi40N1pNODY1LjgxIDQ5MS4wOEM4NjUuODEgNDc4LjI5IDg1Ni44IDQ2Ny42MyA4NDQuNjYgNDY1LjJDODQ0LjU5IDQ2NS4xOSA4NDQuNTIgNDY1LjE3IDg0NC40NCA0NjUuMTVDODQ0LjMgNDY1LjEzIDg0NC4xNiA0NjUuMDggODQ0LjAyIDQ2NS4wNkw4NDMuNTMgNDY1LjAxQzg0Mi4yNCA0NjQuOCA4NDAuOTMgNDY0LjY3IDgzOS41OSA0NjQuNjVMODM2LjEgNDY0LjMyQzc1Mi42OSA0NTguMzUgNjY2Ljg4IDQ1NiA1ODYuMzggNDU0LjM5TDU4Ni4yMiA0NTMuOEM1NDcuMDQgMzA2Ljg0IDQ5OC4xIDE1Ni41OSA0MzIuMTEgMTU2LjU5QzM3MC42MiAxNTYuODcgMzE1LjE5IDI1NS41OSAyNjcuMzIgNDUwLjA3QzIzMy41IDQ0OS42NCAyMDIuNjcgNDQ5LjE3IDE3My42IDQ0OC42N0MxNzEuOTUgNDQ4LjY0IDE3MC40NyA0NDguNjMgMTY5LjE1IDQ0OC42M0MxNjIuOTUgNDQ4LjYzIDE1OS45MiA0NDguODkgMTU4LjQyIDQ0OS4wOUMxNDIuMDUgNDUxLjk5IDEzMC4xNyA0NjYuMjcgMTMwLjE3IDQ4My4wNkMxMzAuMTcgNTAwLjE4IDE0Mi45NSA1MTQuODYgMTU5LjYgNTE3LjI2TDE1OS45NCA1MTcuNjFMMjUxLjY0IDUxNy42MUMyNDMuMTMgNTU2LjUyIDIzNS42NyA1OTUgMjI5LjQ0IDYzMi4wN0wyMjYuNzEgNjQ4LjM5TDIyNi42OCA2NDkuMTdDMjI2Ljc0IDY2MS43NiAyMzcuMDMgNjcyIDI0OS42MSA2NzJDMjU3LjU5IDY3MiAyNjQuODIgNjY3Ljg0IDI2OC45NSA2NjEuMzZMMjY5LjYgNjYxLjg4TDMxNC42OCA1MTcuNjFMNTMxLjgyIDUxNy42MUM1NDguNDEgNTgwLjI5IDU2NS42MiA2NDUuMDEgNTg4LjM2IDcwNS43NUM2MDAuNTIgNzM4LjIzIDYyOC45OSA4MTQuMyA2NzYuNTcgODE0LjY4TDY3Ny4xMSA4MTQuNjhDNzUwLjc1IDgxNC42OCA3NzkuNDUgNjk1LjczIDc5OC40NiA2MTYuOTlDODAyLjU0IDYwMC4wNSA4MDYuMDcgNTg1LjQyIDgwOS40IDU3NC42N0w4MTAuNzMgNTcwLjIzTDgxMC43MiA1NzAuMjNDODExLjA0IDU2OS4xOSA4MTEuMjEgNTY4LjA5IDgxMS4yMSA1NjYuOTRDODExLjIxIDU2MC42NCA4MDYuMSA1NTUuNTMgNzk5LjggNTU1LjUzQzc5NC45MSA1NTUuNTMgNzkwLjc1IDU1OC42IDc4OS4xMiA1NjIuOTJMNzg5LjEgNTYyLjkxTDc4Ny41IDU2Ny4zM0M3ODEuMjUgNTg0LjYzIDc3NS40NyA2MDAuOTkgNzcwLjM1IDYxNS40OUw3NjkuOTYgNjE2LjU4QzczOC4wOSA3MDYuODUgNzIzLjU0IDc0OC4wNSA2OTUuMDQgNzQ4LjA2TDY5NC4zNCA3NDguMDVMNjkzLjk0IDc0OC4xMUw2OTMuMjMgNzQ4LjA5QzY1Ni43NSA3NDguMDkgNjIyLjQgNTk5Ljc5IDYwOS40NyA1NDMuOTdDNjA3LjIzIDUzNC4zIDYwNS4xOCA1MjUuNDIgNjAzLjI5IDUxNy42MUw4MzkuMTggNTE3LjYxQzg0My42MSA1MTcuNjEgODQ3Ljc4IDUxNi41IDg1MS40NCA1MTQuNThDODUxLjQ3IDUxNC41NyA4NTEuNDkgNTE0LjU2IDg1MS41MSA1MTQuNTVDODUxLjg4IDUxNC4zNiA4NTIuMjMgNTE0LjE0IDg1Mi41OSA1MTMuOTNDODUyLjk5IDUxMy43IDg1My4zOCA1MTMuNDcgODUzLjc2IDUxMy4yMkM4NTMuOTUgNTEzLjEgODU0LjEzIDUxMi45NyA4NTQuMzEgNTEyLjg0Qzg1NC44OCA1MTIuNDUgODU1LjQzIDUxMi4wNCA4NTUuOTcgNTExLjZDODU2LjAxIDUxMS41NyA4NTYuMDQgNTExLjU0IDg1Ni4wOCA1MTEuNTFDODYyLjAyIDUwNi42NCA4NjUuODEgNDk5LjI2IDg2NS44MSA0OTEuMDhaTTEyNzIuMzUgNjI3LjA3TDEyMzIuODcgNzI0LjY0TDExMTguMTggNzI0LjY0TDEzMzYuNCAyMTUuMjFMMTQzNy42OSAyMTUuMjFMMTY1NS4xNiA3MjQuNjRMMTU0MS4yMSA3MjQuNjRMMTUwMS43NCA2MjcuMDdMMTI3Mi4zNSA2MjcuMDdaTTEzODYuMyAzNDQuMDVMMTMxMS44MiA1MjkuNUwxNDYyLjI3IDUyOS41TDEzODYuMyAzNDQuMDVaTTIzMDEuNjMgNTI4Ljc2TDIzMDEuNjMgNzI0LjY0TDIxOTguMTEgNzI0LjY0TDIxOTguMTEgNTM3LjdDMjE5OC4xMSA0ODEuMDkgMjE3MC41NSA0NTAuNTYgMjEyMi4xNCA0NTAuNTZDMjEwMC41NCA0NTAuNTYgMjA3Ni43MSA0NjAuMjQgMjA1NS4xMSA0OTAuMDNDMjA1Ni42IDUwMi42OSAyMDU4LjA5IDUxNS4zNSAyMDU4LjA5IDUyOC43NkwyMDU4LjA5IDcyNC42NEwxOTU0LjU2IDcyNC42NEwxOTU0LjU2IDUzNy43QzE5NTQuNTYgNDgxLjA5IDE5MjcuMDEgNDUwLjU2IDE4NzcuODUgNDUwLjU2QzE4NTcuNzQgNDUwLjU2IDE4MzUuNCA0NjIuNDcgMTgxNC41NSA0OTAuNzhMMTgxNC41NSA3MjQuNjRMMTcxMS4wMiA3MjQuNjRMMTcxMS4wMiAzNjcuODlMMTgxNC41NSAzNjcuODlMMTgxNC41NSAzODkuNDlDMTgzNi44OSAzNjguNjMgMTg2MC43MiAzNTYuNzIgMTkwMi40MyAzNTYuNzJDMTk0Ny44NiAzNTYuNzIgMTk4OC4wOCAzNzQuNTkgMjAxNi4zOCA0MDcuMzZDMjA1NC4zNyAzNzIuMzYgMjA5MC4xMSAzNTYuNzIgMjE0NS45NyAzNTYuNzJDMjIzMy4xMSAzNTYuNzIgMjMwMS42MyA0MjQuNDkgMjMwMS42MyA1MjguNzZaTTI3NTYuNjkgNTQ2LjYzQzI3NTYuNjkgNjUwLjE2IDI2NzcuNzUgNzMyLjA4IDI1NzkuNDMgNzMyLjA4QzI1MzkuMjIgNzMyLjA4IDI1MDUuNyA3MjEuNjYgMjQ3OC4xNCA3MDMuNzhMMjQ3OC4xNCA4OTYuNjhMMjM3NC42MiA4OTYuNjhMMjM3NC42MiAzNjcuODlMMjQ3OC4xNCAzNjcuODlMMjQ3OC4xNCAzODguNzRDMjUwNS43IDM3MC44NiAyNTM5LjIyIDM2MC40NCAyNTc5LjQzIDM2MC40NEMyNjc3Ljc1IDM2MC40NCAyNzU2LjY5IDQ0MS42MiAyNzU2LjY5IDU0Ni42M1pNMjY1NC42NiA1NDYuNjNDMjY1NC42NiA0OTMuNzUgMjYxNS45MyA0NDcuNTggMjU2Mi4zIDQ0Ny41OEMyNTMxLjc3IDQ0Ny41OCAyNTAxLjIzIDQ1OCAyNDc4LjE0IDQ4OS4yOUwyNDc4LjE0IDYwMy4yNEMyNTAxLjIzIDYzMy43NyAyNTMxLjc3IDY0NC4yIDI1NjIuMyA2NDQuMkMyNjE1LjkzIDY0NC4yIDI2NTQuNjYgNTk4Ljc3IDI2NTQuNjYgNTQ2LjYzWk0yOTE4LjMxIDcyNC42NEwyODE0Ljc4IDcyNC42NEwyODE0Ljc4IDE5NS44NEwyOTE4LjMxIDE5NS44NEwyOTE4LjMxIDcyNC42NFpNMzEyNi4wOSA3MjQuNjRMMzAyMi41NyA3MjQuNjRMMzAyMi41NyAzNjcuODlMMzEyNi4wOSAzNjcuODlMMzEyNi4wOSA3MjQuNjRaTTMwMTEuNCAyNDIuMDJDMzAxMS40IDIwNy4wMSAzMDM4Ljk1IDE4MC45NSAzMDczLjk2IDE4MC45NUMzMTA4LjIyIDE4MC45NSAzMTM1Ljc4IDIwNy4wMSAzMTM1Ljc4IDI0Mi4wMkMzMTM1Ljc4IDI3Ni4yOCAzMTA4LjIyIDMwMS42IDMwNzMuOTYgMzAxLjZDMzAzOC45NSAzMDEuNiAzMDExLjQgMjc2LjI4IDMwMTEuNCAyNDIuMDJaTTM1MDIuMiA3MTkuNDJDMzQ1OS4wMSA3MzIuODMgMzQzOS42NCA3MzUuODEgMzQwNi4xMyA3MzUuODFDMzMxOS43MyA3MzUuODEgMzI2My4xMyA2NzQuNzQgMzI2My4xMyA1ODIuMzhMMzI2My4xMyA0NTUuMDNMMzE4Ny45MSA0NTUuMDNMMzE4Ny45MSAzNjcuODlMMzI2My4xMyAzNjcuODlMMzI2My4xMyAyNDAuNTNMMzM2NS45MSAyNDAuNTNMMzM2NS45MSAzNjcuODlMMzQ5NC43NiAzNjcuODlMMzQ5NC43NiA0NTUuMDNMMzM2NS45MSA0NTUuMDNMMzM2NS45MSA1ODEuNjRDMzM2NS45MSA2MjEuODYgMzM5MC40OSA2NDAuNDggMzQyOC40NyA2NDAuNDhDMzQ0Ny44MyA2NDAuNDggMzQ2OC42OSA2MzYuMDEgMzQ4OC44IDYzMC44TDM1MDIuMiA3MTkuNDJaTTM5MTcuNzkgNzI0LjY0TDM4MTQuMjYgNzI0LjY0TDM4MTQuMjYgNjk5LjMxQzM3ODUuMjIgNzIyLjQgMzc1Mi40NCA3MzUuODEgMzcxMi4yMyA3MzUuODFDMzYxOC4zOCA3MzUuODEgMzU1NS44MiA2NjguMDMgMzU1NS44MiA1NjQuNTFMMzU1NS44MiAzNjcuODlMMzY1OS4zNSAzNjcuODlMMzY1OS4zNSA1NTQuODNDMzY1OS4zNSA2MTEuNDMgMzY4Ny42NSA2NDEuOTcgMzczNi4wNiA2NDEuOTdDMzc2Mi4xMyA2NDEuOTcgMzc5MC40MyA2MjYuMzMgMzgxNC4yNiA1OTcuMjhMMzgxNC4yNiAzNjcuODlMMzkxNy43OSAzNjcuODlMMzkxNy43OSA3MjQuNjRaTTQzNTcuMjEgNzI0LjY0TDQyNTMuNjkgNzI0LjY0TDQyNTMuNjkgNzAzLjc4QzQyMjYuMTMgNzIxLjY2IDQxOTIuNjIgNzMyLjA4IDQxNTIuNCA3MzIuMDhDNDA1NC4wOSA3MzIuMDggMzk3NC4zOSA2NTAuOSAzOTc0LjM5IDU0NS44OUMzOTc0LjM5IDQ0Mi4zNiA0MDU0LjA5IDM2MC40NCA0MTUyLjQgMzYwLjQ0QzQxOTIuNjIgMzYwLjQ0IDQyMjYuMTMgMzcwLjg2IDQyNTMuNjkgMzg4Ljc0TDQyNTMuNjkgMTk1Ljg0TDQzNTcuMjEgMTk1Ljg0TDQzNTcuMjEgNzI0LjY0Wk00MjUzLjY5IDYwMy4yNEw0MjUzLjY5IDQ4OS4yOUM0MjMwLjYgNDU4Ljc1IDQyMDAuMDYgNDQ4LjMyIDQxNjkuNTMgNDQ4LjMyQzQxMTUuMTYgNDQ4LjMyIDQwNzcuMTcgNDkzLjc1IDQwNzcuMTcgNTQ1Ljg5QzQwNzcuMTcgNTk4Ljc3IDQxMTUuMTYgNjQ0Ljk1IDQxNjkuNTMgNjQ0Ljk1QzQyMDAuMDYgNjQ0Ljk1IDQyMzAuNiA2MzQuNTIgNDI1My42OSA2MDMuMjRaTTQ3NzcuMjcgNTcyLjdMNDUxNC4zNiA1NzIuN0M0NTIyLjU1IDYxNC40MSA0NTUwLjExIDY0Ny4xOCA0NjA2LjcxIDY0Ny4xOEM0NjM1Ljc2IDY0Ny4xOCA0NjU1Ljg3IDYzOC4yNCA0NjY3LjA0IDYyMC4zN0w0Nzc1LjAzIDYyMC4zN0M0NzU1LjY3IDY4OC44OSA0Njg4LjY0IDczNS44MSA0NjA0LjQ4IDczNS44MUM0NDg5Ljc4IDczNS44MSA0NDEyLjMyIDY1My4xNCA0NDEyLjMyIDU0Ni42M0M0NDEyLjMyIDQzNi40MSA0NDg5LjA0IDM1Ni43MSA0NjAxLjUgMzU2LjcxQzQ3MDMuNTMgMzU2LjcxIDQ3NzkuNSA0MjguOTYgNDc3OS41IDUzOS4xOEM0Nzc5LjUgNTU0LjA4IDQ3NzguNzYgNTYyLjI3IDQ3NzcuMjcgNTcyLjdaTTQ1MTUuMSA1MTEuNjNMNDY3Ni43MiA1MTEuNjNDNDY3MC43NiA0NjYuOTQgNDY0My45NSA0NDIuMzYgNDYwMi4yNCA0NDIuMzZDNDU1Mi4zNCA0NDIuMzYgNDUyNC43OSA0NzEuNDEgNDUxNS4xIDUxMS42M1oiIC8+Cjwvc3ZnPg==" class="amp-logo-img" id="amp-logo-display" style="height:28px;width:auto">
         <div class="upload-overlay"><span>Replace logo</span></div>
       </div>
 
@@ -571,8 +565,8 @@ input[type=file] { display: none; }
 
     <!-- Headline -->
     <div class="header-content">
-      <h1 contenteditable="true">From Fragmented Signals<br>to Full-Funnel Clarity</h1>
-      <p class="header-sub" contenteditable="true">How Amazon Music went from multi-week BI tickets to real-time campaign clarity — and what it means for every marketing team at Amazon.</p>
+      <h1 contenteditable="true" data-key="headline">From Fragmented Signals<br>to Full-Funnel Clarity</h1>
+      <p class="header-sub" contenteditable="true" data-key="header-sub">How Amazon Music went from multi-week BI tickets to real-time campaign clarity — and what it means for every marketing team at Amazon.</p>
     </div>
 
   </div><!-- /header -->
@@ -584,13 +578,13 @@ input[type=file] { display: none; }
     <div class="challenge-row">
 
       <div class="challenge-left">
-        <p class="challenge-intro" contenteditable="true">Before Amplitude, campaign measurement at Amazon Music was slow, fragmented, and disconnected from the speed of marketing decisions.</p>
-        <p class="challenge-sub" contenteditable="true">Too often, teams struggled to:</p>
+        <p class="challenge-intro" contenteditable="true" data-key="challenge-intro">Before Amplitude, campaign measurement at Amazon Music was slow, fragmented, and disconnected from the speed of marketing decisions.</p>
+        <p class="challenge-sub" contenteditable="true" data-key="challenge-sub">Too often, teams struggled to:</p>
         <ul class="challenge-list" id="challenge-list">
-          <li><span contenteditable="true">Get campaign performance reports without submitting BI tickets — turnaround times measured in weeks</span></li>
-          <li><span contenteditable="true">Connect campaign activity to downstream behaviors like sign-ups for Amazon Music Unlimited</span></li>
-          <li><span contenteditable="true">Adjust spend in-flight — without timely visibility, campaigns ran to completion before problems were caught</span></li>
-          <li><span contenteditable="true">Answer the fundamental question: which campaigns are actually driving conversions?</span></li>
+          <li><span contenteditable="true" data-key="bullet-0">Get campaign performance reports without submitting BI tickets — turnaround times measured in weeks</span></li>
+          <li><span contenteditable="true" data-key="bullet-1">Connect campaign activity to downstream behaviors like sign-ups for Amazon Music Unlimited</span></li>
+          <li><span contenteditable="true" data-key="bullet-2">Adjust spend in-flight — without timely visibility, campaigns ran to completion before problems were caught</span></li>
+          <li><span contenteditable="true" data-key="bullet-3">Answer the fundamental question: which campaigns are actually driving conversions?</span></li>
         </ul>
       </div>
 
@@ -632,10 +626,10 @@ input[type=file] { display: none; }
     </div><!-- /challenge-row -->
 
     <!-- Body copy -->
-    <p class="body-copy" contenteditable="true">Amplitude gave Amazon Music a single platform to capture and analyze all clickstream signals — so marketers can now ask questions directly, without waiting on an analytics team. Which campaigns drove sign-ups? Where are users dropping off? Which channel converts best? Decision-making that once took weeks now happens in real time.</p>
+    <p class="body-copy" contenteditable="true" data-key="body-copy">Amplitude gave Amazon Music a single platform to capture and analyze all clickstream signals — so marketers can now ask questions directly, without waiting on an analytics team. Which campaigns drove sign-ups? Where are users dropping off? Which channel converts best? Decision-making that once took weeks now happens in real time.</p>
 
     <!-- Features -->
-    <div class="features-title" contenteditable="true">The Amplitude AI Analytics Platform Is Now Fully Agentic</div>
+    <div class="features-title" contenteditable="true" data-key="features-title">The Amplitude AI Analytics Platform Is Now Fully Agentic</div>
     <div class="features-grid">
 
       <div class="feature">
@@ -646,8 +640,8 @@ input[type=file] { display: none; }
           </svg>
         </div>
         <div class="feature-text">
-          <div class="feature-title" contenteditable="true">Funnel &amp; Journey Analysis</div>
-          <div class="feature-desc" contenteditable="true">See conversion rates at every step and surface the actual routes users take — including unexpected ones. Know exactly which campaigns drive sign-ups and where users drop off.</div>
+          <div class="feature-title" contenteditable="true" data-key="feat1-title">Funnel &amp; Journey Analysis</div>
+          <div class="feature-desc" contenteditable="true" data-key="feat1-desc">See conversion rates at every step and surface the actual routes users take — including unexpected ones. Know exactly which campaigns drive sign-ups and where users drop off.</div>
         </div>
       </div>
 
@@ -662,8 +656,8 @@ input[type=file] { display: none; }
           </svg>
         </div>
         <div class="feature-text">
-          <div class="feature-title" contenteditable="true">Conversational AI for Every Marketer</div>
-          <div class="feature-desc" contenteditable="true">Any marketer asks a question in plain language — no data expertise needed. Agents build charts, monitor dashboards, surface anomalies, and perform deep root cause analysis automatically.</div>
+          <div class="feature-title" contenteditable="true" data-key="feat2-title">Conversational AI for Every Marketer</div>
+          <div class="feature-desc" contenteditable="true" data-key="feat2-desc">Any marketer asks a question in plain language — no data expertise needed. Agents build charts, monitor dashboards, surface anomalies, and perform deep root cause analysis automatically.</div>
         </div>
       </div>
 
@@ -677,8 +671,8 @@ input[type=file] { display: none; }
           </svg>
         </div>
         <div class="feature-text">
-          <div class="feature-title" contenteditable="true">Session Replay &amp; Web Experiments</div>
-          <div class="feature-desc" contenteditable="true">See what users do between events — rage clicks, dead clicks, friction points. Then act without waiting on engineering: make no-code page changes and run controlled experiments instantly.</div>
+          <div class="feature-title" contenteditable="true" data-key="feat3-title">Session Replay &amp; Web Experiments</div>
+          <div class="feature-desc" contenteditable="true" data-key="feat3-desc">See what users do between events — rage clicks, dead clicks, friction points. Then act without waiting on engineering: make no-code page changes and run controlled experiments instantly.</div>
         </div>
       </div>
 
@@ -688,34 +682,34 @@ input[type=file] { display: none; }
 
   <!-- LOGO STRIP -->
   <div class="logo-strip">
-    <div class="logo-strip-label" contenteditable="true">Performance driven teams at Amazon choose Amplitude</div>
+    <div class="logo-strip-label" contenteditable="true" data-key="logo-label">Performance driven teams at Amazon choose Amplitude</div>
     <div class="logos-row" id="logos-row">
       <div class="logo-slot" onclick="triggerLogoUpload(0)" title="Click to upload logo">
-        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Culver's</span>
+        <span class="logo-slot-text" contenteditable="true" data-key="logo-0" onclick="event.stopPropagation()">Culver's</span>
         <div class="logo-slot-overlay"><span>Upload</span></div>
       </div>
       <div class="logo-slot" onclick="triggerLogoUpload(1)" title="Click to upload logo">
-        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Jersey Mike's</span>
+        <span class="logo-slot-text" contenteditable="true" data-key="logo-1" onclick="event.stopPropagation()">Jersey Mike's</span>
         <div class="logo-slot-overlay"><span>Upload</span></div>
       </div>
       <div class="logo-slot" onclick="triggerLogoUpload(2)" title="Click to upload logo">
-        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">TicketSwap</span>
+        <span class="logo-slot-text" contenteditable="true" data-key="logo-2" onclick="event.stopPropagation()">TicketSwap</span>
         <div class="logo-slot-overlay"><span>Upload</span></div>
       </div>
       <div class="logo-slot" onclick="triggerLogoUpload(3)" title="Click to upload logo">
-        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Gathern</span>
+        <span class="logo-slot-text" contenteditable="true" data-key="logo-3" onclick="event.stopPropagation()">Gathern</span>
         <div class="logo-slot-overlay"><span>Upload</span></div>
       </div>
       <div class="logo-slot" onclick="triggerLogoUpload(4)" title="Click to upload logo">
-        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Livestorm</span>
+        <span class="logo-slot-text" contenteditable="true" data-key="logo-4" onclick="event.stopPropagation()">Livestorm</span>
         <div class="logo-slot-overlay"><span>Upload</span></div>
       </div>
       <div class="logo-slot" onclick="triggerLogoUpload(5)" title="Click to upload logo">
-        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Taco Bell</span>
+        <span class="logo-slot-text" contenteditable="true" data-key="logo-5" onclick="event.stopPropagation()">Taco Bell</span>
         <div class="logo-slot-overlay"><span>Upload</span></div>
       </div>
       <div class="logo-slot" onclick="triggerLogoUpload(6)" title="Click to upload logo">
-        <span class="logo-slot-text" contenteditable="true" onclick="event.stopPropagation()">Trendhim</span>
+        <span class="logo-slot-text" contenteditable="true" data-key="logo-6" onclick="event.stopPropagation()">Trendhim</span>
         <div class="logo-slot-overlay"><span>Upload</span></div>
       </div>
     </div>
@@ -725,50 +719,96 @@ input[type=file] { display: none; }
   <div class="footer">
     <div class="footer-copy">© 2026 Amplitude Inc. Confidential. All Rights Reserved.</div>
     <div class="ae-block">
-      <div class="ae-name" contenteditable="true">Robyn Baron</div>
-      <div class="ae-title" contenteditable="true">Strategic Account Manager – Amazon</div>
-      <div class="ae-contact" contenteditable="true">robyn.baron@amplitude.com &nbsp;|&nbsp; (206) 255-4955</div>
+      <div class="ae-name" contenteditable="true" data-key="ae-name">Robyn Baron</div>
+      <div class="ae-title" contenteditable="true" data-key="ae-title">Strategic Account Manager – Amazon</div>
+      <div class="ae-contact" contenteditable="true" data-key="ae-contact">robyn.baron@amplitude.com &nbsp;|&nbsp; (206) 255-4955</div>
     </div>
   </div>
 
 </div><!-- /page -->
 
 <script>
-// ── Save HTML (preserves all edits + uploaded images) ──
+const STORAGE_KEY = 'martech-summit-edits';
+
+// ── Persist edits to localStorage on every change ──
+function saveToStorage() {
+  const data = {};
+  document.querySelectorAll('[contenteditable][data-key]').forEach(el => {
+    data[el.dataset.key] = el.innerHTML;
+  });
+  // Also save uploaded image srcs
+  const ssImg = document.getElementById('screenshot-img');
+  if (ssImg && ssImg.src && ssImg.style.display !== 'none') data['__screenshot'] = ssImg.src;
+  const ampLogo = document.getElementById('amp-logo-display');
+  if (ampLogo && ampLogo.src && !ampLogo.src.startsWith('data:image/svg+xml;base64,PHN')) data['__amp-logo'] = ampLogo.src;
+  const partnerLogo = document.getElementById('partner-logo-display').querySelector('img');
+  if (partnerLogo) data['__partner-logo'] = partnerLogo.src;
+  document.querySelectorAll('.logo-slot').forEach((slot, i) => {
+    const img = slot.querySelector('.logo-slot-img');
+    if (img && img.src) data['__logo-' + i] = img.src;
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  // Flash saved indicator
+  const btn = document.getElementById('save-status');
+  if (btn) { btn.textContent = '✓ Saved'; setTimeout(() => { btn.textContent = '💾 Save edits'; }, 1500); }
+}
+
+// ── Restore edits from localStorage on load ──
+function restoreFromStorage() {
+  let data;
+  try { data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { return; }
+  document.querySelectorAll('[contenteditable][data-key]').forEach(el => {
+    if (data[el.dataset.key] !== undefined) el.innerHTML = data[el.dataset.key];
+  });
+  if (data['__screenshot']) {
+    const img = document.getElementById('screenshot-img');
+    img.src = data['__screenshot']; img.style.display = 'block';
+    document.getElementById('screenshot-placeholder').style.display = 'none';
+    document.getElementById('remove-screenshot-btn').style.display = 'flex';
+  }
+  if (data['__amp-logo']) {
+    document.getElementById('amp-logo-display').src = data['__amp-logo'];
+  }
+  if (data['__partner-logo']) {
+    document.getElementById('partner-logo-display').innerHTML = `<img src="${data['__partner-logo']}" class="partner-logo-img" alt="Partner">`;
+  }
+  document.querySelectorAll('.logo-slot').forEach((slot, i) => {
+    if (data['__logo-' + i]) {
+      const textEl = slot.querySelector('.logo-slot-text');
+      if (textEl) textEl.style.display = 'none';
+      let imgEl = slot.querySelector('.logo-slot-img');
+      if (!imgEl) { imgEl = document.createElement('img'); imgEl.className = 'logo-slot-img'; slot.insertBefore(imgEl, slot.querySelector('.logo-slot-overlay')); }
+      imgEl.src = data['__logo-' + i]; imgEl.style.display = 'block';
+    }
+  });
+}
+
+// ── Reset all edits ──
+function resetEdits() {
+  if (!confirm('Reset all edits back to defaults?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+// ── Download HTML with all edits baked in ──
 function saveHTML() {
-  // Clone the page, strip editor UI, keep all edits
   const clone = document.documentElement.cloneNode(true);
-
-  // Remove toolbar and file inputs from the clone
   clone.querySelectorAll('.toolbar, input[type=file]').forEach(el => el.remove());
-
-  // Strip contenteditable attributes so the saved file is clean
-  clone.querySelectorAll('[contenteditable]').forEach(el => {
-    el.removeAttribute('contenteditable');
-  });
-
-  // Remove hover overlays from saved file
+  clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
   clone.querySelectorAll('.upload-overlay, .img-overlay, .logo-slot-overlay').forEach(el => el.remove());
-
-  // Remove onclick upload triggers from logo-slots
-  clone.querySelectorAll('.logo-slot, .logo-upload-wrap').forEach(el => {
-    el.removeAttribute('onclick');
-    el.style.cursor = 'default';
-  });
-
+  clone.querySelectorAll('[onclick]').forEach(el => el.removeAttribute('onclick'));
   const html = '<!DOCTYPE html>\n' + clone.outerHTML;
   const blob = new Blob([html], { type: 'text/html' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'amazon-martech-summit-2026.html';
-  a.click();
-  URL.revokeObjectURL(a.href);
+  a.href = URL.createObjectURL(blob); a.download = 'amazon-martech-summit-2026.html';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
-// ── Print to PDF (blur any active editable first) ──
+// ── Print to PDF ──
 function printPDF() {
-  document.activeElement && document.activeElement.blur();
-  setTimeout(() => window.print(), 100);
+  if (document.activeElement) document.activeElement.blur();
+  setTimeout(() => window.print(), 150);
 }
 
 // ── Image uploads ──
@@ -783,7 +823,8 @@ document.getElementById('upload-amp-logo').addEventListener('change', function()
   if (!this.files[0]) return;
   readFile(this.files[0], url => {
     const d = document.getElementById('amp-logo-display');
-    d.innerHTML = `<img src="${url}" class="amp-logo-img" alt="Amplitude">`;
+    d.src = url;
+    saveToStorage();
   });
   this.value = '';
 });
@@ -819,6 +860,12 @@ function removeScreenshot() {
   document.getElementById('screenshot-placeholder').style.display = 'block';
   document.getElementById('remove-screenshot-btn').style.display = 'none';
 }
+
+// Auto-save on any text edit
+document.addEventListener('input', saveToStorage);
+
+// Restore saved edits (script is at bottom of body, DOM already ready)
+restoreFromStorage();
 
 // Customer logos
 function triggerLogoUpload(idx) {
