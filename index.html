@@ -492,7 +492,9 @@ input[type=file] { display: none; }
   <div class="toolbar-sep"></div>
   <span class="toolbar-item">🖼️ Hover images to replace</span>
   <div class="toolbar-sep"></div>
-  <button class="toolbar-item" onclick="window.print()">⬇️ Save as PDF</button>
+  <button class="toolbar-item" onclick="saveHTML()">💾 Save edits</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-item" onclick="printPDF()">🖨️ Save as PDF</button>
 </div>
 
 <!-- PAGE -->
@@ -732,6 +734,43 @@ input[type=file] { display: none; }
 </div><!-- /page -->
 
 <script>
+// ── Save HTML (preserves all edits + uploaded images) ──
+function saveHTML() {
+  // Clone the page, strip editor UI, keep all edits
+  const clone = document.documentElement.cloneNode(true);
+
+  // Remove toolbar and file inputs from the clone
+  clone.querySelectorAll('.toolbar, input[type=file]').forEach(el => el.remove());
+
+  // Strip contenteditable attributes so the saved file is clean
+  clone.querySelectorAll('[contenteditable]').forEach(el => {
+    el.removeAttribute('contenteditable');
+  });
+
+  // Remove hover overlays from saved file
+  clone.querySelectorAll('.upload-overlay, .img-overlay, .logo-slot-overlay').forEach(el => el.remove());
+
+  // Remove onclick upload triggers from logo-slots
+  clone.querySelectorAll('.logo-slot, .logo-upload-wrap').forEach(el => {
+    el.removeAttribute('onclick');
+    el.style.cursor = 'default';
+  });
+
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'amazon-martech-summit-2026.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ── Print to PDF (blur any active editable first) ──
+function printPDF() {
+  document.activeElement && document.activeElement.blur();
+  setTimeout(() => window.print(), 100);
+}
+
 // ── Image uploads ──
 function readFile(file, cb) {
   const r = new FileReader();
