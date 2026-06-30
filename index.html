@@ -485,8 +485,30 @@ input[type=file] { display: none; }
 
 
 
-<!-- Toolbar -->
+<!-- Hidden file inputs for image uploads -->
+<input type="file" id="upload-amp-logo" accept="image/*">
+<input type="file" id="upload-partner-logo" accept="image/*">
+<input type="file" id="upload-screenshot" accept="image/*">
+<input type="file" id="upload-logo-0" accept="image/*">
+<input type="file" id="upload-logo-1" accept="image/*">
+<input type="file" id="upload-logo-2" accept="image/*">
+<input type="file" id="upload-logo-3" accept="image/*">
+<input type="file" id="upload-logo-4" accept="image/*">
+<input type="file" id="upload-logo-5" accept="image/*">
+<input type="file" id="upload-logo-6" accept="image/*">
 
+<!-- Toolbar -->
+<div class="toolbar">
+  <span class="toolbar-item">✏️ Click any text to edit</span>
+  <div class="toolbar-sep"></div>
+  <span class="toolbar-item">🖼️ Hover images to replace</span>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-item" id="save-status" onclick="saveHTML()">💾 Save edits</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-item" onclick="printPDF()">🖨️ Save as PDF</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-item" onclick="resetEdits()" style="color:#ff9a9a">↺ Reset</button>
+</div>
 
 <!-- PAGE -->
 <div class="page">
@@ -793,7 +815,7 @@ function readFile(file, cb) {
 }
 
 // Amplitude logo
-document.getElementById('upload-amp-logo').addEventListener('change', function() {
+document.getElementById('upload-amp-logo')?.addEventListener('change', function() {
   if (!this.files[0]) return;
   readFile(this.files[0], url => {
     const d = document.getElementById('amp-logo-display');
@@ -804,7 +826,7 @@ document.getElementById('upload-amp-logo').addEventListener('change', function()
 });
 
 // Partner logo
-document.getElementById('upload-partner-logo').addEventListener('change', function() {
+document.getElementById('upload-partner-logo')?.addEventListener('change', function() {
   if (!this.files[0]) return;
   readFile(this.files[0], url => {
     const d = document.getElementById('partner-logo-display');
@@ -814,7 +836,7 @@ document.getElementById('upload-partner-logo').addEventListener('change', functi
 });
 
 // Screenshot
-document.getElementById('upload-screenshot').addEventListener('change', function() {
+document.getElementById('upload-screenshot')?.addEventListener('change', function() {
   if (!this.files[0]) return;
   readFile(this.files[0], url => {
     const img = document.getElementById('screenshot-img');
